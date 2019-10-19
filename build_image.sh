@@ -26,12 +26,15 @@ mirror="http://mirrordirector.raspbian.org/raspbian/"
 release="buster"
 version_tag="local-development"
 boot_partition_size="100" # in megabytes
-root_partition_size="1000" # in megabytes, aproximate
+root_partition_size="2000" # in megabytes, aproximate
 
 ################################
 ### settings above this line ###
 ################################
 ! false "end of user settings"
+
+bold=$(tput bold)
+normal=$(tput sgr0)
 
 device="";
 root_device="";
@@ -112,7 +115,7 @@ gpg --no-default-keyring --keyring $keyring --fingerprint --import ../raspberryp
 echo "Bootstrapping debian [stage one]"
 package_cache_dir=`readlink -f ../package-cache`
 ! mkdir "$package_cache_dir"
-debootstrap --include=locales,console-common,ntp,openssh-server,sudo,wpasupplicant --foreign --cache-dir "$package_cache_dir" --keyring "$keyring" --arch armhf $release root $mirror
+debootstrap --include=locales,console-common,ntp,openssh-server,sudo,wpasupplicant,xorg,python3,python3-pip,python3-gpiozero --foreign --cache-dir "$package_cache_dir" --keyring "$keyring" --arch armhf $release root $mirror
 
 #raspberrypi-sys-mods raspberrypi-archive-keyring raspberrypi-bootloader libraspberrypi-bin
 
@@ -124,11 +127,6 @@ echo "Applying overlay"
 
 echo "Exporting keyring"
 gpg --no-default-keyring --keyring $keyring --export > root/etc/apt/trusted.gpg
-
-#echo "Copying firmware"
-#cp -R ../firmware/hardfp/opt/* root/opt/
-#cp -R ../firmware/modules/* root/lib/modules/
-#cp -R ../firmware/boot/* root/boot/
 
 echo "Runing setup steps"
 
@@ -145,7 +143,7 @@ chmod +x root/_cleanup.sh
 LANG=C chroot root/ bash /_cleanup.sh
 rm root/_cleanup.sh
 
-echo "Done!"
+echo "${bold}======== Done! ========${normal}"
 
 read -p "Press any key to continue... " -n1 -s
 

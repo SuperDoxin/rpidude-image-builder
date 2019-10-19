@@ -1,0 +1,10 @@
+[Unit]
+Description=Safely shut down when the power is turned off
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /etc/safeshutdown/safeshutdown.py
+Restart=no
+
+[Install]
+WantedBy=basic.target
